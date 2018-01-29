@@ -1,6 +1,6 @@
 import os, sys
 import numpy as np
-from scipy.signal import hilbert
+from scipy import signal
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 
 file = sys.argv[1].strip()
@@ -23,25 +23,30 @@ for i in range(0, num_clips):
 		clips.append(file_audio.subclip(i*clip_size, (i+1)*clip_size))
 
 sigs = [i.to_soundarray() for i in clips]
-hil_sigs = [hilbert(i) for i in sigs]
+for i in range(0, num_clips):
+	sigs[i] = [np.sqrt((a**2).mean()) for a in sigs[i]]
+
+hil_sigs = [signal.hilbert(i) for i in sigs]
 sig_env = [np.abs(i) for i in hil_sigs]
+
+b, a = signal.butter(3, 0.05)
+smooth_env = [signal.filtfilt(b, a, i) for i in sigs]
 
 freq = len(sigs[0])/clips[0].duration
 t = [1000*np.arange(0, len(sigs[0]), 1) / freq, 1000*np.arange(0, len(sigs[-1]), 1) / freq]
 
-print("phase 1")
+# print("phase 1")
 
 #experiment
 high = 0.2
 low = 0.1
 
 l, clip, offset = [{'s':0, 'e':0}], 0, 0
-for clip in range(0, 5):
+for clip in range(0, num_clips):
 	i = 0
-	while i < len(sig_env[clip]):
+	while i < len(smooth_env[clip]):
 		# t[clip//4][i] += offset
-		abs_val = np.sqrt(sig_env[clip][i][0]**2 + sig_env[clip][i][1]**2)
-		if abs_val >= high :
+		if smooth_env[clip][i] >= high :
 			if l[-1]['e'] >= t[clip//4][i]-5000+offset:
 				l[-1]['e'] = t[clip//4][i]+offset
 			else :
@@ -50,10 +55,10 @@ for clip in range(0, 5):
 					'e' : t[clip//4][i]+offset
 				})
 				
-			while i < len(sig_env[clip]) and abs_val >= low:
+			while i < len(smooth_env[clip]) and smooth_env[clip][i] >= low:
 				l[-1]['e'] = t[clip//4][i]+offset
-				abs_val = np.sqrt(sig_env[clip][i][0]**2 + sig_env[clip][i][1]**2)
 				i+=1
+
 				# t[clip//4][i] += offset
 		i+=1
 
