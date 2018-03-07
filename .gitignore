@@ -1,0 +1,9 @@
+vids/
+laugh_detector/laugh_detector_no_division.py
+laugh_detector/wrong_laugh_detector_with_division.py
+action_scenes_detector/action_detector.py
+*.mp4
+*.mkv
+*.avi
+*.txt
+*.png
