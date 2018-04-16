@@ -7,3 +7,4 @@ action_scenes_detector/action_detector.py
 *.avi
 *.txt
 *.png
+.ipyng_checkpoints/
