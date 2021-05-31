@@ -7,6 +7,12 @@
 # This script essentially renames the files to not have anything before Anime*ahe.
 # So, the file from earlier would be renamed to Anime*ahe_Bakemonogatari_-_05_BD_720p_TenB.mp4.
 
+# Usage
+# THE_SITE=Anime*ahe ./ap_renamer.sh /path/to/the/directory [/another/directory]...
+
+# Example
+# THE_SITE=Anime*ahe ./ap_renamer.sh /home/me/anime/Bakemonogatari /home/me/anime/Nisemonogatari
+
 function substring_exists () {
   str=$1
   substr=$2
